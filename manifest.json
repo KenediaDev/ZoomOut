@@ -1,0 +1,20 @@
+{
+  "name": "Zoom Out",
+  "version": "0.0.1",
+  "namespace": "Kenedia.Modules.ZoomOut",
+  "package": "ZoomOut.dll",
+  "manifest_version": 1,
+
+  "description": "A Blish solution to keep your zoom at max!",
+  "dependencies": {
+    "bh.blishhud": ">=0.11.7"
+  },
+  "url": "https://github.com/KenediaDev/Builds-Manager.git",
+  "contributors": [
+    {
+      "url": "https://github.com/KenediaDev",
+      "name": "Kenedia"
+    }
+  ],
+  "enabled_without_gw2": false
+}
