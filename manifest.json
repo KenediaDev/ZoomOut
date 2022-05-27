@@ -1,6 +1,6 @@
 {
   "name": "Zoom Out",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "namespace": "Kenedia.Modules.ZoomOut",
   "package": "ZoomOut.dll",
   "manifest_version": 1,
@@ -9,7 +9,7 @@
   "dependencies": {
     "bh.blishhud": ">=0.11.7"
   },
-  "url": "https://github.com/KenediaDev/Builds-Manager.git",
+  "url": "https://github.com/KenediaDev/ZoomOut.git",
   "contributors": [
     {
       "url": "https://github.com/KenediaDev",
