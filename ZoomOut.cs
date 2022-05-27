@@ -8,7 +8,9 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.ComponentModel.Composition;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
+using UiSize = Gw2Sharp.Mumble.Models.UiSize;
 
 namespace Kenedia.Modules.ZoomOut
 {
@@ -33,14 +35,24 @@ namespace Kenedia.Modules.ZoomOut
             ModuleInstance = this;
         }
 
-        [DllImport("user32")]
-        public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-        public const uint WM_COMMAND = 0x0111;
-        public const uint WM_PASTE = 0x0302;
-        [DllImport("user32")]
-        public static extern bool PostMessage(IntPtr hWnd, uint Msg, int wParam, int lParam);
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
 
         public SettingEntry<Blish_HUD.Input.KeyBinding> ToggleModule_Key;
+        public SettingEntry<Blish_HUD.Input.KeyBinding> ManualMaxZoomOut;
         public SettingEntry<bool> ShowCornerIcon;
 
         public string CultureString;
@@ -49,6 +61,9 @@ namespace Kenedia.Modules.ZoomOut
 
         private CornerIcon cornerIcon;
 
+        private int MumbleTick;
+        private Point Resolution;
+        private bool InGame;
         private float Zoom;
         private int ZoomTicks = 0;
 
@@ -82,6 +97,11 @@ namespace Kenedia.Modules.ZoomOut
                                                       new Blish_HUD.Input.KeyBinding(ModifierKeys.Ctrl, Keys.NumPad0),
                                                       () => string.Format(Strings.common.Toggle, Name));
 
+            ManualMaxZoomOut = settings.DefineSetting(nameof(ManualMaxZoomOut),
+                                                      new Blish_HUD.Input.KeyBinding(Keys.None),
+                                                      () => Strings.common.ManualMaxZoomOut_Name,
+                                                      () => Strings.common.ManualMaxZoomOut_Tooltip);
+
             ShowCornerIcon = settings.DefineSetting(nameof(ShowCornerIcon),
                                                       true,
                                                       () => Strings.common.ShowCorner_Name,
@@ -96,7 +116,15 @@ namespace Kenedia.Modules.ZoomOut
             ToggleModule_Key.Value.Activated += ToggleModule;
             ShowCornerIcon.SettingChanged += ShowCornerIcon_SettingChanged;
 
+            ManualMaxZoomOut.Value.Enabled = true;
+            ManualMaxZoomOut.Value.Activated += ManualMaxZoomOut_Triggered;
+
             DataLoaded = false;
+        }
+
+        private void ManualMaxZoomOut_Triggered(object sender, EventArgs e)
+        {
+            ZoomTicks = 40;
         }
 
         private void ToggleModule(object sender, EventArgs e)
@@ -146,11 +174,9 @@ namespace Kenedia.Modules.ZoomOut
 
         protected override void Update(GameTime gameTime)
         {
-            Ticks.global += gameTime.ElapsedGameTime.TotalMilliseconds;
-
-            if (Ticks.global > 25 && ModuleActive)
+            if (ModuleActive)
             {
-                Ticks.global = 0;
+                Ticks.global = gameTime.TotalGameTime.TotalMilliseconds;
 
                 var Mumble = GameService.Gw2Mumble;
 
@@ -163,6 +189,24 @@ namespace Kenedia.Modules.ZoomOut
                     Blish_HUD.Controls.Intern.Mouse.RotateWheel(-25);
                     ZoomTicks -= 1;
                 }
+                var mouse = Mouse.GetState();
+                var mouseState =  (mouse.LeftButton == ButtonState.Released) ? ButtonState.Released : ButtonState.Pressed;
+
+                if(mouseState == ButtonState.Pressed || GameService.Graphics.Resolution != Resolution)
+                {
+                    Resolution = GameService.Graphics.Resolution;
+                    MumbleTick = Mumble.Tick + 5;
+                    return;
+                }                
+
+                if (!GameService.GameIntegration.Gw2Instance.IsInGame && InGame && Mumble.Tick > MumbleTick)
+                {
+                    Blish_HUD.Controls.Intern.Keyboard.Stroke(Blish_HUD.Controls.Extern.VirtualKeyShort.ESCAPE, false);
+                    Blish_HUD.Controls.Intern.Mouse.Click(Blish_HUD.Controls.Intern.MouseButton.LEFT, 5, 5);
+
+                    MumbleTick = Mumble.Tick + 1;
+                }
+                InGame = GameService.GameIntegration.Gw2Instance.IsInGame;
 
                 Zoom = Mumble.PlayerCamera.FieldOfView;
             }
@@ -176,6 +220,9 @@ namespace Kenedia.Modules.ZoomOut
 
             ToggleModule_Key.Value.Activated -= ToggleModule;
             ShowCornerIcon.SettingChanged -= ShowCornerIcon_SettingChanged;
+
+            ManualMaxZoomOut.Value.Enabled = false;
+            ManualMaxZoomOut.Value.Activated -= ManualMaxZoomOut_Triggered;
 
             cornerIcon?.Dispose();
             if(cornerIcon != null) cornerIcon.Click -= CornerIcon_Click;

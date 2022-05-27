@@ -79,6 +79,24 @@ namespace Kenedia.Modules.ZoomOut.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set Max Zoom.
+        /// </summary>
+        internal static string ManualMaxZoomOut_Name {
+            get {
+                return ResourceManager.GetString("ManualMaxZoomOut_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scroll out as much as possible!.
+        /// </summary>
+        internal static string ManualMaxZoomOut_Tooltip {
+            get {
+                return ResourceManager.GetString("ManualMaxZoomOut_Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} {1} !.
         /// </summary>
         internal static string RunStateChange {

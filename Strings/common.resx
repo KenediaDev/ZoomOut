@@ -123,6 +123,12 @@
   <data name="Deactivated" xml:space="preserve">
     <value>deactivated</value>
   </data>
+  <data name="ManualMaxZoomOut_Name" xml:space="preserve">
+    <value>Set Max Zoom</value>
+  </data>
+  <data name="ManualMaxZoomOut_Tooltip" xml:space="preserve">
+    <value>Scroll out as much as possible!</value>
+  </data>
   <data name="RunStateChange" xml:space="preserve">
     <value>{0} {1} !</value>
   </data>

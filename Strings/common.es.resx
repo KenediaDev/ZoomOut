@@ -118,21 +118,27 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Activated" xml:space="preserve">
-    <value>activated</value>
+    <value>activado</value>
   </data>
   <data name="Deactivated" xml:space="preserve">
-    <value>deactivated</value>
+    <value>desactivado</value>
+  </data>
+  <data name="ManualMaxZoomOut_Name" xml:space="preserve">
+    <value>Ajustar el zoom máximo</value>
+  </data>
+  <data name="ManualMaxZoomOut_Tooltip" xml:space="preserve">
+    <value>Desplázate todo lo que puedas.</value>
   </data>
   <data name="RunStateChange" xml:space="preserve">
     <value>{0} {1} !</value>
   </data>
   <data name="ShowCorner_Name" xml:space="preserve">
-    <value>Show Corner Icon</value>
+    <value>Mostrar el icono de la esquina</value>
   </data>
   <data name="ShowCorner_Tooltip" xml:space="preserve">
-    <value>Show / Hide the Corner Icon of {0}.</value>
+    <value>Mostrar / Ocultar el icono de la esquina de {0}.</value>
   </data>
   <data name="Toggle" xml:space="preserve">
-    <value>Toggle {0}</value>
+    <value>Alternar {0}</value>
   </data>
 </root>
